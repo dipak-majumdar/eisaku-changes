@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ company_name }} Notification</title>
+    <style type="text/css">
+      body { margin:0; padding:0; width:100% !important; height:100%; background:#F6F9FC; font-family: "Nunito Sans", Helvetica, Arial, sans-serif; color:#333333; }
+      a { color:#0066FF; text-decoration:none; }
+      table { border-collapse:collapse; width:100%; }
+      .email-wrapper { background:#F6F9FC; padding:20px 0; }
+      .email-content { max-width:600px; margin:0 auto; background:#FFFFFF; border-radius:8px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.05); }
+      .email-masthead { text-align:center; padding:10px; background:#0066FF; }
+      .email-masthead img { max-height:60px; }
+      .email-body { padding:40px; }
+      h1 { margin:0; font-size:24px; color:#222222; }
+      p { font-size:16px; line-height:1.5; color:#555555; }
+      .button { display:inline-block; padding:14px 28px; margin:20px 0; background:#FF6A00; color:#FFFFFF; border-radius:4px; font-weight:bold; text-decoration:none; }
+      .email-footer { text-align:center; padding:10px; font-size:13px; color:#A0A0A0; background:#F0F3F7; }
+      @media only screen and (max-width:600px) {
+        .email-body { padding:20px; }
+        .button { width:100% !important; text-align:center; }
+      }
+    </style>
+  </head>
+  <body>
+    <span style="display:none;visibility:hidden;mso-hide:all;font-size:1px;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">
+      {{ preheader_text or "New message from " ~ company_name }}
+    </span>
+    <table class="email-wrapper" cellpadding="0" cellspacing="0" role="presentation">
+      <tr>
+        <td align="center">
+          <table class="email-content" cellpadding="0" cellspacing="0" role="presentation">
+            <tr>
+              <td class="email-masthead">
+                {% if company_logo %}
+                  <img src="{{ company_logo }}" alt="{{ company_name }} Logo" />
+                {% else %}
+                  <span style="font-size:28px;color:#FFFFFF;font-weight:bold;">{{ company_name }}</span>
+                {% endif %}
+              </td>
+            </tr>
+            <tr>
+              <td class="email-body">
+                {% if username %}
+                  <h1>Hello {{ username }},</h1>
+                {% else %}
+                  <h1>Hello,</h1>
+                {% endif %}
+
+                <p>{{ body }}</p>
+
+                {% if action_url and action_text %}
+                  <a href="{{ action_url }}" class="button">{{ action_text }}</a>
+                {% endif %}
+
+                <p>Thanks,<br>The {{ company_name }} Team</p>
+              </td>
+            </tr>
+            <tr>
+              <td class="email-footer">
+                &copy; {{ current_year }} {{ company_name }}. All rights reserved.
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

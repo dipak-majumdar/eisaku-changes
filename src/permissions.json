@@ -1,0 +1,497 @@
+[
+    {
+        "admin": {
+            "role": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "True"
+            },
+            "permission": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "True"
+            },
+            "user": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "True"
+            },
+            "branch": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_change_manager": "True",
+                "can_view": "True",
+                "can_delete": "True"
+            },
+            "employee": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "True"
+            },
+            "vehicle_type": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "True"
+            },
+            "customer": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "True",
+                "can_approve": "True",
+                "can_reject": "True"
+            },
+            "vendor": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "True",
+                "can_approve": "True",
+                "can_reject": "True"
+            },
+            "trip": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "True",
+                "can_approve": "True",
+                "can_reject": "True",
+                "can_close": "True",
+                "can_assign_vendor": "True",
+                "can_view_load_unload_pod": "True"
+            },
+            "lane": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "True",
+                "can_assign": "True"
+            },
+            "complain": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_inprogress": "True",
+                "can_close": "True",
+                "can_view": "True",
+                "can_delete": "True"
+            },
+            "block_user": {
+                "can_block_customer": "True",
+                "can_block_vendor": "True"
+            },
+            "target": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "True",
+                "can_approve": "True",
+                "can_reject": "True"
+            },
+            "country": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "True"
+                
+            },
+            "state": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "True"
+                
+            },
+            "district": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "True"
+            },
+            "city": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "True"
+            },
+            "region": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "True"
+            },
+            "vendor_registration": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "True"
+              
+            },
+            "vendoragreeement": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "True"
+            },
+            "contact_person": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "True"
+            },
+            "advance_payment": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "True"
+            }
+        },
+        "management": {
+            "target": {
+                "can_create": "False",
+                "can_change": "False",
+                "can_view": "True",
+                "can_delete": "False",
+                "can_approve": "True",
+                "can_reject": "True"
+            },
+            "user": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "False"
+            },
+            "customer": {
+                "can_create": "False",
+                "can_change": "False",
+                "can_view": "True",
+                "can_delete": "False",
+                "can_approve": "True",
+                "can_reject": "True"
+            },
+            "employee": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "True"
+            },
+            "trip": {
+                "can_create": "False",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "False",
+                "can_approve": "True",
+                "can_reject": "True",
+                "can_close": "False",
+                "can_assign_vendor": "False",
+                "can_approve_flit_rate": "True",
+                "can_reject_flit_rate": "True",
+                "can_approve_advance_payment": "True",
+                "can_view_load_unload_pod": "True"
+            }
+            
+        },
+        "corporate admin": {
+            "branch": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_change_manager": "True",
+                "can_view": "True",
+                "can_delete": "True"
+            },
+            "employee": {
+                "can_create": "False",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "True"
+            },
+            "user": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "True"
+            },
+            "customer": {
+                "can_create": "False",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "False",
+                "can_approve": "False",
+                "can_reject": "False"
+            },
+            "vendor": {
+                "can_create": "False",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "False",
+                "can_approve": "False",
+                "can_reject": "False"
+            },
+             "trip": {
+              
+                "can_view": "True"
+              
+            }
+          
+        },
+        "regional manager": {
+            "role": {
+                "can_create": "False",
+                "can_change": "False",
+                "can_view": "False",
+                "can_delete": "False"
+            },
+              "branch": {
+                "can_create": "False",
+                "can_change": "False",
+                "can_view": "True",
+                "can_delete": "False"
+            }
+        },
+        "national manager": {
+            "trip": {
+                "can_create": "False",
+                "can_change": "False",
+                "can_view": "True",
+                "can_delete": "False",
+                "can_approve": "True",
+                "can_reject": "True",
+                "can_close": "False",
+                "can_assign_vendor": "False",
+                "can_approve_flit_rate": "False",
+                "can_reject_flit_rate": "False",
+                "can_approve_advance_payment": "False",
+                "can_view_load_unload_pod": "True"
+
+
+            },
+            "target": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "False",
+                "can_approve": "False",
+                "can_reject": "False"
+            },
+            "vendor": {
+                "can_create": "False",
+                "can_change": "False",
+                "can_view": "True",
+                "can_delete": "False",
+                "can_approve": "False",
+                "can_reject": "False"
+            },
+            "complain": {
+                "can_create": "False",
+                "can_change": "False",
+                "can_view": "True",
+                "can_delete": "False",
+                "can_inprogress": "True",
+                "can_close": "True"
+            }
+        },
+        "branch manager": {
+            "target": {
+                "can_create": "False",
+                "can_change": "False",
+                "can_view": "True",
+                "can_delete": "False",
+                "can_approve": "False",
+                "can_reject": "False"
+            },
+            "customer": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "False",
+                "can_approve": "True",
+                "can_reject": "True"
+            },
+            "vendor_registration": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "True"
+              
+            },
+            "vendor": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "False",
+                "can_approve": "True",
+                "can_reject": "True"
+            },
+            "trip": {
+                "can_create": "False",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "False",
+                "can_approve": "True",
+                "can_reject": "True",
+                "can_close": "False",
+                "can_assign_vendor": "False",
+                "can_approve_flit_rate": "True",
+                "can_reject_flit_rate": "True",
+                "can_approve_advance_payment": "False",
+                "can_add_shortage_damage": "True",
+                "can_view_load_unload_pod": "True"
+            },
+            "lane": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "True",
+                "can_assign": "True"
+            },
+            "complain": {
+                "can_create": "True",
+                "can_change": "False",
+                "can_view": "True",
+                "can_delete": "False"
+            },
+            "block_user": {
+                "can_block_customer": "True",
+                "can_block_vendor": "True"
+            },
+            "employee": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "False"
+            }
+        },
+        "accountant": {
+            "trip": {
+                "can_create": "False",
+                "can_change": "False",
+                "can_view": "True",
+                "can_delete": "False",
+                "can_approve": "False",
+                "can_reject": "False",
+                "can_close": "True",
+                "can_customer_advance_payment": "True",
+                "can_vendor_advance_payment": "True",
+                "can_approve_flit_rate": "False",
+                "can_reject_flit_rate": "False",
+                "can_approve_advance_payment": "False",
+                "can_view_load_unload_pod": "True"
+            },
+             "vendor": {
+                "can_create": "False",
+                "can_change": "False",
+                "can_view": "True",
+                "can_delete": "False",
+                "can_approve": "True",
+                "can_reject": "True"
+            },
+            "advance_payment": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "True"
+            }
+        },
+        "supervisor": {
+            "trip": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "False",
+                "can_approve": "False",
+                "can_reject": "False",
+                "can_close": "True",
+                "can_assign_vendor": "False",
+                "can_approve_flit_rate": "False",
+                "can_reject_flit_rate": "False",
+                "can_approve_advance_payment": "False",
+                "can_view_load_unload_pod": "True"
+            },
+            "lane": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "False",
+                "can_assign": "True"
+            }
+        },
+        "field executive": {
+            "vendor_registration": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "False"
+              
+            },
+            "vendor": {
+                "can_create": "True",
+                "can_change": "True",
+                "can_view": "True",
+                "can_delete": "False",
+                "can_approve": "True",
+                "can_reject": "True"
+            }
+        },
+        "customer": {
+            "trip": {
+                "can_create": "False",
+                "can_change": "False",
+                "can_view": "True",
+                "can_delete": "False",
+                "can_approve": "False",
+                "can_reject": "False",
+                "can_close": "False",
+                "can_approve_flit_rate": "False",
+                "can_reject_flit_rate": "False",
+                "can_approve_advance_payment": "False",
+                "can_view_load_unload_pod": "True"
+            }
+        },
+        "vendor": {
+            "trip": {
+                "can_create": "False",
+                "can_change": "False",
+                "can_view": "True",
+                "can_delete": "False",
+                "can_approve": "True",
+                "can_reject": "True",
+                "can_close": "False",
+                "can_approve_flit_rate": "False",
+                "can_reject_flit_rate": "False",
+                "can_approve_advance_payment": "False",
+                "can_view_load_unload_pod": "True"
+            },
+            "complain": {
+                "can_create": "False",
+                "can_change": "False",
+                "can_view": "True",
+                "can_delete": "False"
+            }
+        },
+        "supplier lead": {
+            "trip": {
+                "can_create": "False",
+                "can_change": "False",
+                "can_view": "True",
+                "can_delete": "False",
+                "can_approve": "False",
+                "can_reject": "False",
+                "can_close": "False",
+                "can_assign_vendor": "True",
+                "can_approve_flit_rate": "False",
+                "can_reject_flit_rate": "False",
+                "can_approve_advance_payment": "False",
+                "can_load_vehicle": "True",
+                "can_unload_vehicle": "True",
+                "can_pod_submit": "True",
+                "can_view_load_unload_pod": "True"
+            }
+            
+        }
+
+    }
+]

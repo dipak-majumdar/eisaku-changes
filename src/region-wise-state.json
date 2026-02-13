@@ -1,0 +1,44 @@
+[
+    {
+        "south" : [
+            "andhra pradesh",
+            "karnataka",
+            "kerala",
+            "tamil nadu",
+            "telangana"
+        ],
+        "west" : [
+            "goa",
+            "gujarat",
+            "maharashtra",
+            "rajasthan"
+        ],
+        "central" : [
+            "madhya pradesh",
+            "chhattisgarh"
+        ],
+        "north" : [
+            "haryana",
+            "himachal pradesh",
+            "punjab",
+            "uttarakhand",
+            "uttar pradesh"
+        ],
+        "east" : [
+            "bihar",
+            "jharkhand",
+            "odisha",
+            "west bengal"
+        ],
+        "north_east" : [
+            "assam",
+            "arunachal pradesh",
+            "manipur",
+            "meghalaya",
+            "mizoram",
+            "nagaland",
+            "tripura",
+            "sikkim"
+        ]
+    }
+]

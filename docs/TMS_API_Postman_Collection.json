@@ -1,0 +1,727 @@
+{
+	"info": {
+		"_postman_id": "eisaku-tms-api-collection",
+		"name": "Eisaku TMS API Collection",
+		"description": "Complete API collection for Eisaku Transport Management System",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{auth_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "identifier",
+									"value": "your_email_or_mobile",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "your_password",
+									"type": "text"
+								},
+								{
+									"key": "login_method",
+									"value": "email",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/accounts/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"accounts",
+								"login"
+							]
+						},
+						"description": "Login with email/mobile/username and password"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/accounts/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"accounts",
+								"me"
+							]
+						},
+						"description": "Get current authenticated user information"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "List Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/?page=1&size=10&search=&role_id=",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								""
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number"
+								},
+								{
+									"key": "size",
+									"value": "10",
+									"description": "Items per page"
+								},
+								{
+									"key": "search",
+									"value": "",
+									"description": "Search term"
+								},
+								{
+									"key": "role_id",
+									"value": "",
+									"description": "Filter by role ID"
+								}
+							]
+						},
+						"description": "Get paginated list of users"
+					},
+					"response": []
+				},
+				{
+					"name": "List Users (Minimal)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/minimal?page=1&size=10&search=&role_id=",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"minimal"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number"
+								},
+								{
+									"key": "size",
+									"value": "10",
+									"description": "Items per page"
+								},
+								{
+									"key": "search",
+									"value": "",
+									"description": "Search term"
+								},
+								{
+									"key": "role_id",
+									"value": "",
+									"description": "Filter by role ID"
+								}
+							]
+						},
+						"description": "Get minimal user data (fast listing)"
+					},
+					"response": []
+				},
+				{
+					"name": "Check User Exists",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/check-exists?email=&mobile=",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"check-exists"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "",
+									"description": "Email to check"
+								},
+								{
+									"key": "mobile",
+									"value": "",
+									"description": "Mobile to check"
+								}
+							]
+						},
+						"description": "Check if user exists by email or mobile"
+					},
+					"response": []
+				},
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\",\n  \"mobile\": \"1234567890\",\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"role_id\": \"uuid-here\",\n  \"password\": \"password123\",\n  \"country_id\": \"uuid-here\",\n  \"state_id\": \"uuid-here\",\n  \"district_id\": \"uuid-here\",\n  \"city_id\": \"uuid-here\",\n  \"pin_code\": \"123456\",\n  \"location\": \"Some location\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								""
+							]
+						},
+						"description": "Create a new user"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/{user_id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"{user_id}"
+							]
+						},
+						"description": "Get user by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"first_name\": \"John Updated\",\n  \"last_name\": \"Doe Updated\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/{user_id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"{user_id}"
+							]
+						},
+						"description": "Update user by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/{user_id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"{user_id}"
+							]
+						},
+						"description": "Delete user by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Toggle User Status",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/{user_id}/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"{user_id}",
+								"status"
+							]
+						},
+						"description": "Toggle user active/inactive status"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Customers",
+			"item": [
+				{
+					"name": "List Customers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/customers/?page=1&size=10&search=",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"customers",
+								""
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								},
+								{
+									"key": "search",
+									"value": ""
+								}
+							]
+						},
+						"description": "Get paginated list of customers"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Customer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Customer Name\",\n  \"email\": \"customer@example.com\",\n  \"mobile\": \"1234567890\",\n  \"address\": \"Customer Address\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/customers/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"customers",
+								""
+							]
+						},
+						"description": "Create a new customer"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Customer",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/customers/{customer_id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"customers",
+								"{customer_id}"
+							]
+						},
+						"description": "Get customer by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Customer",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Customer Name\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/customers/{customer_id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"customers",
+								"{customer_id}"
+							]
+						},
+						"description": "Update customer by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Customer",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/customers/{customer_id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"customers",
+								"{customer_id}"
+							]
+						},
+						"description": "Delete customer by ID"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Vendors",
+			"item": [
+				{
+					"name": "List Vendors",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/vendors/?page=1&size=10&search=",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"vendors",
+								""
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								},
+								{
+									"key": "search",
+									"value": ""
+								}
+							]
+						},
+						"description": "Get paginated list of vendors"
+					},
+					"response": []
+				},
+				{
+					"name": "List Open Vendors",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/vendors/open-vendors",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"vendors",
+								"open-vendors"
+							]
+						},
+						"description": "Get list of open vendors"
+					},
+					"response": []
+				},
+				{
+					"name": "Check Duplicate Vendor",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/vendors/check-duplicate/?gst=&pan=&vendor_id=",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"vendors",
+								"check-duplicate"
+							],
+							"query": [
+								{
+									"key": "gst",
+									"value": ""
+								},
+								{
+									"key": "pan",
+									"value": ""
+								},
+								{
+									"key": "vendor_id",
+									"value": ""
+								}
+							]
+						},
+						"description": "Check for duplicate vendor by GST/PAN"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Vendor",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/vendors/{vendor_id}/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"vendors",
+								"{vendor_id}",
+								""
+							]
+						},
+						"description": "Get vendor by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Vendor",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Vendor Name\",\n  \"email\": \"vendor@example.com\",\n  \"mobile\": \"1234567890\",\n  \"gst\": \"GST123456\",\n  \"pan\": \"PAN123456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/vendors/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"vendors",
+								""
+							]
+						},
+						"description": "Create a new vendor"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Vendor",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Vendor Name\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/vendors/{id}/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"vendors",
+								"{id}",
+								""
+							]
+						},
+						"description": "Update vendor by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Vendor Status",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"approved\",\n  \"reject_reason\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/vendors/{id}/status/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"vendors",
+								"{id}",
+								"status",
+								""
+							]
+						},
+						"description": "Update vendor status"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Vendor",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/vendors/{id}/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"vendors",
+								"{id}",
+								""
+							]
+						},
+						"description": "Delete vendor by ID"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

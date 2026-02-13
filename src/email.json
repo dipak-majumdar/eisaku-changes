@@ -1,0 +1,164 @@
+{
+  "general": {
+    "signature": "<p>Thanks,<br>The {{ company_name }} Team</p>"
+  },
+  "onboarding": {
+    "supplier_lead": {
+      "header": "Welcome to {{ company_name }}, {{ username }}!",
+      "body": "<p>Hi {{ username }},</p><p>Thank you for joining {{ company_name }} as a Supplier Lead. Your account is now active. You can log in <a href=\"{{ action_url }}\">here</a> to manage supplier relationships, approve vendor proposals, and oversee procurement operations.</p><p>If you have any questions or need assistance, you can reach out to us at <a href=\"mailto:{{ support_email }}\">{{ support_email }}</a>. We’re here to support you.</p>"
+    },
+    "vendor": {
+      "header": "Vendor Access Activated — Welcome to {{ company_name }}, {{ username }}",
+      "body": "<p>Hello {{ username }},</p><p>Welcome to the {{ company_name }} vendor network! Your vendor account is now active. Visit your dashboard at <a href=\"{{ action_url }}\">this link</a> to manage orders, update your catalog and pricing, and collaborate with our procurement team.</p><p>If you need any assistance, feel free to reach out at <a href=\"mailto:{{ support_email }}\">{{ support_email }}</a>.</p>"
+    },
+    "branch_manager": {
+      "header": "Welcome to {{ company_name }}, {{ username }}",
+      "body": "<p>Hi {{ username }},</p><p>Welcome aboard as a Branch Manager for {{ company_name }}! You now have access to your branch dashboard. There, you can approve trip requests, monitor performance, and manage your team.</p><p>To get started, log in <a href=\"{{ action_url }}\">here</a>.</p><p>If you’d like any help or a walkthrough, just drop us a message at <a href=\"mailto:{{ support_email }}\">{{ support_email }}</a>.</p>"
+    },
+    "customer": {
+      "header": "Welcome to {{ company_name }}, {{ username }} — Your Account Is Ready!",
+      "body": "<p>Hello {{ username }},</p><p>Your account on {{ company_name }} has been successfully created. You can <a href=\"{{ action_url }}\">log in</a> now and begin using the platform.</p><p>If you have any questions or want a quick start guide, don’t hesitate to contact us at <a href=\"mailto:{{ support_email }}\">{{ support_email }}</a>.</p>"
+    },
+    "national_manager": {
+      "header": "Welcome to {{ company_name }}, {{ username }}",
+      "body": "<p>Hello {{ username }},</p><p>We’re excited to have you join the team as a National Manager! Your role will involve overseeing performance across regions, tracking KPIs, and driving strategic growth.</p><p>To dive in, <a href=\"{{ action_url }}\">log in here</a> to access national-level dashboards.</p><p>If you need any support or a guided walkthrough, just write to us at <a href=\"mailto:{{ support_email }}\">{{ support_email }}</a>.</p>"
+    },
+    "corporate_admin": {
+      "header": "Administrator Access Granted — Welcome, {{ username }}",
+      "body": "<p>Hi {{ username }},</p><p>Your corporate admin account at {{ company_name }} is now set up. You have full access to administrative tools, user management, and system settings.</p><p>Log in via <a href=\"{{ action_url }}\">this link</a> to get started.</p><p>If you face any issues or need help configuring things, feel free to contact us at <a href=\"mailto:{{ support_email }}\">{{ support_email }}</a>.</p>"
+    },
+    "accountant": {
+      "header": "Welcome to {{ company_name }}, {{ username }} (Accountant)",
+      "body": "<p>Hello {{ username }},</p><p>Welcome to the finance team at {{ company_name }}! Your accountant account is now active, giving you access to billing, reconciliation, and payment dashboards.</p><p>You can log in <a href=\"{{ action_url }}\">here</a> to check pending payments and manage financial operations.</p><p>If you need help or training on our finance module, reach out at <a href=\"mailto:{{ support_email }}\">{{ support_email }}</a>.</p>"
+    },
+    "supervisor": {
+      "header": "Welcome to {{ company_name }}, {{ username }} (Supervisor)",
+      "body": "<p>Hi {{ username }},</p><p>Welcome aboard as a Supervisor! You’ll be overseeing field operations, guiding field executives, and ensuring tasks are completed efficiently.</p><p>Get started by logging in <a href=\"{{ action_url }}\">here</a> to view your team dashboard.</p><p>If you’d like a walkthrough or need any help, we’re always here at <a href=\"mailto:{{ support_email }}\">{{ support_email }}</a>.</p>"
+    },
+    "regional_manager": {
+      "header": "Welcome to {{ company_name }}, {{ username }} (Regional Manager)",
+      "body": "<p>Hi {{ username }},</p><p>Welcome to your role as Regional Manager at {{ company_name }}. You now have access to region-wide metrics, branch performance, and strategic dashboards.</p><p>To begin, <a href=\"{{ action_url }}\">log in here</a>.</p><p>If you’d like a tour of the management tools, drop us a message at <a href=\"mailto:{{ support_email }}\">{{ support_email }}</a>.</p>"
+    },
+    "field_executive": {
+      "header": "Welcome to {{ company_name }}, {{ username }} (Field Executive)",
+      "body": "<p>Hello {{ username }},</p><p>Thanks for joining {{ company_name }} as a Field Executive! You’ll be working directly in the field—managing pickups, deliveries, and trip coordination.</p><p>You can log in <a href=\"{{ action_url }}\">here</a> to start checking your assignments.</p><p>If you need guidance on using our tools or want more info, feel free to reach out at <a href=\"mailto:{{ support_email }}\">{{ support_email }}</a>.</p>"
+    },
+    "admin": {
+      "header": "Welcome to the Admin Console, {{ username }}",
+      "body": "<p>Hi {{ username }},</p><p>Your admin account at {{ company_name }} is now live. You have full access to system settings, user management, and role configurations.</p><p>To get started, <a href=\"{{ action_url }}\">log in here</a>.</p><p>If you want a walkthrough or need help setting permissions, just write to us at <a href=\"mailto:{{ support_email }}\">{{ support_email }}</a>.</p>"
+    },
+    "management": {
+      "header": "Welcome to the Leadership Team, {{ username }}",
+      "body": "<p>Hello {{ username }},</p><p>We’re thrilled to have you in the management team at {{ company_name }}. In this role, you’ll oversee key operations, set strategic direction, and drive company growth.</p><p>Log in via <a href=\"{{ action_url }}\">this link</a> to view high-level dashboards and reports.</p><p>If you’d like a tour of the leadership tools or need help navigating, reach out to us at <a href=\"mailto:{{ support_email }}\">{{ support_email }}</a>.</p>"
+    }
+  },
+  "status_change": {
+    "active": {
+      "header": "Your {{ company_name }} Account Is Active",
+      "body": "<p>Dear {{ username }},</p><p>We’re pleased to inform you that your account status has been updated to <strong>Active</strong>. You now have full access to all features.</p><p>If you have any questions or need support, please contact us at <a href=\"mailto:{{ support_email }}\">{{ support_email }}</a>.</p>"
+    },
+    "inactive": {
+      "header": "Your {{ company_name }} Account Has Been Deactivated",
+      "body": "<p>Dear {{ username }},</p><p>We regret to inform you that your account is now <strong>Inactive</strong>, so access to the platform is currently disabled.</p><p>If this is unexpected or you’d like to reactivate, please reach out to us at <a href=\"mailto:{{ support_email }}\">{{ support_email }}</a>.</p>"
+    },
+    "pending": {
+      "header": "Your {{ company_name }} Account Is Pending Approval",
+      "body": "<p>Hi {{ username }},</p><p>Thank you for registering with {{ company_name }}. Your account is currently under review and in a <strong>Pending</strong> status.</p><p>We’ll notify you as soon as it’s approved. In the meantime, if you have any questions or want to provide additional information, you can reply to this email or contact <a href=\"mailto:{{ support_email }}\">{{ support_email }}</a>.</p>"
+    }
+  },
+  "password_reset": {
+    "request": {
+      "header": "Password Reset Request for {{ company_name }}",
+      "body": "<p>Hello {{ username }},</p><p>We received a request to reset your password. Click the link below to set a new one:</p><p><a href=\"{{ reset_url }}\">Reset Your Password</a></p><p>If you did not request a password reset, please ignore this email or contact support if you have concerns.</p>"
+    },
+    "confirmation": {
+      "header": "Your Password Has Been Changed",
+      "body": "<p>Hello {{ username }},</p><p>This is a confirmation that the password for your account has just been changed. If you did not make this change, please contact our support team immediately at <a href=\"mailto:{{ support_email }}\">{{ support_email }}</a>.</p>"
+    }
+  },
+  "trip" : {
+    "pending": {
+        "header": "Trip Request Pending",
+        "body": "Your trip request has been created and is currently pending approval. Our team will review it and notify you once the status is updated."
+    },
+    "approved": {
+        "header": "Trip Approved",
+        "body": "Good news! Your trip has been approved by the Branch Manager. Further steps will be initiated shortly."
+    },
+    "rejected": {
+        "header": "Trip Rejected",
+        "body": "We regret to inform you that your trip request has been rejected by the Branch Manager. Please contact support for more details."
+    },
+    "vendor_assigned": {
+        "header": "Vendor Assigned",
+        "body": "A vendor has been successfully assigned to your trip. The logistics for the trip are now being arranged."
+    },
+    "driver_assigned": {
+        "header": "Driver Assigned",
+        "body": "A driver has been assigned to your trip. You will receive updates related to vehicle movement soon."
+    },
+    "fleet_rate_approve": {
+        "header": "Flit Rate Approved",
+        "body": "The flit rate for your trip has been reviewed and approved. The trip process will continue as scheduled."
+    },
+    "flit_rate_reject": {
+        "header": "Fleet Rate Rejected",
+        "body": "The proposed flit rate for your trip has been rejected by the management. Please review and submit a revised rate."
+    },
+    "vehicle_loaded": {
+        "header": "Vehicle Loaded",
+        "body": "The vehicle for your trip has been successfully loaded and is ready for dispatch."
+    },
+    "vehicle_unloaded": {
+        "header": "Vehicle Unloaded",
+        "body": "The vehicle has been unloaded at the destination. The next steps in the trip process will follow shortly."
+    },
+    "advance_payment": {
+        "header": "Advance Payment Processed",
+        "body": "The accounts team has processed the advance payment for your trip. You may proceed with the planned operations."
+    },
+    "pod_submitted": {
+        "header": "POD Submitted",
+        "body": "The Proof of Delivery (POD) has been successfully submitted."
+    },
+    "in_transit": {
+        "header": "Trip In Transit",
+        "body": "Your trip is currently in transit. You will be notified when it reaches the destination or when the status changes."
+    },
+    "completed": {
+        "header": "Trip Completed",
+        "body": "Your trip has been successfully completed. Thank you for using our service."
+    }
+  },
+  "complaint": {
+    "open": {
+      "national_manager": {
+        "header": "New Complaint Assigned — Complaint ID: {{ complaint_id }}",
+        "body": "<p>Hello {{ username }},</p><p>A new complaint has been assigned to you. Here are the details:</p><ul><li><strong>Complaint ID:</strong> {{ complaint_id }}</li><li><strong>Created by:</strong> {{ created_by }}</li><li><strong>User Details:</strong> {{ user_details }}</li><li><strong>Related Customer/Vendor ID:</strong> {{ related_entity_id }}</li></ul><p>Please <a href=\"{{ action_url }}\" style=\"display:inline-block;padding:10px 20px;background-color:#007bff;color:#ffffff;text-decoration:none;border-radius:5px;\">View Complaint</a> and take the necessary action.</p><p>If you have any questions, reach out to us at <a href=\"mailto:{{ support_email }}\">{{ support_email }}</a>.</p>"
+      }
+    },
+    "in_progress": {
+      "branch_manager": {
+        "header": "Complaint {{ complaint_id }} — Work in Progress",
+        "body": "<p>Hello {{ username }},</p><p>The complaint with ID <strong>{{ complaint_id }}</strong> is now <em>In Progress</em>. Our team is actively working on it.</p><p>You can <a href=\"{{ action_url }}\">view the complaint</a> for more details and next steps.</p><p>If you have any questions or additional input, feel free to reach out at <a href=\"mailto:{{ support_email }}\">{{ support_email }}</a>.</p>"
+      }
+    },
+    "resolved": {
+      "branch_manager": {
+        "header": "Complaint {{ complaint_id }} — Resolved",
+        "body": "<p>Hello {{ username }},</p><p>Good news! The complaint with ID <strong>{{ complaint_id }}</strong> has been <em>Resolved</em>.</p><p>You can <a href=\"{{ action_url }}\">view the resolution details</a> and confirm that everything is in order.</p><p>If there’s anything further required or if you’d like to reopen the ticket, please contact us at <a href=\"mailto:{{ support_email }}\">{{ support_email }}</a>.</p>"
+      },
+      "user": {
+        "header": "Your account has been blocked",
+        "body": "<p>Hi {{ username }},</p><p>We’re writing to let you know that your account has been <em>blocked</em>.</p><p>You can <a href=\"{{ action_url }}\">see the resolution here</a> and provide feedback if you like.</p><p>If you’re not satisfied or have more information to share, feel free to reply or contact us at <a href=\"mailto:{{ support_email }}\">{{ support_email }}</a>.</p>"
+      }
+    },
+    "closed": {
+      "branch_manager": {
+        "header": "Complaint {{ complaint_id }} — Closed",
+        "body": "<p>Hello {{ username }},</p><p>The complaint with ID <strong>{{ complaint_id }}</strong> has now been <em>Closed</em>. All actions have been completed.</p><p>You can <a href=\"{{ action_url }}\">view the full complaint record</a> if needed.</p><p>If you think something was missed or want to reopen it, please reach out at <a href=\"mailto:{{ support_email }}\">{{ support_email }}</a>.</p>"
+      }
+    }
+  }
+
+}
