@@ -9,7 +9,6 @@ from sqlalchemy.orm import selectinload, joinedload, raiseload
 from sqlalchemy import select, or_, func
 from typing import Optional, List
 
-from core.websocket_manager import socket_manager
 from models.advance_payment import AdvancePayment
 from models.enums import TimePeriodEnum
 from models.role import Role
@@ -49,6 +48,7 @@ from schemas.branch import IdName
 from services.mail import send_email
 from utils.date_helpers import get_date_range
 from services.notification_helpers import NotificationHelper
+from services.helper import get_supervisors_in_branch, get_branch_manager_id, administrative_user_id
 
 RATE_DIFF = float(os.environ.get("RATE_DIFF", "5"))  
 
@@ -178,6 +178,7 @@ class Service:
                 updated_by=user_id,
             )
         )
+
 
     async def get_object(self, id: UUID) -> Model:
         """Get trip with all relationships"""
@@ -1086,6 +1087,32 @@ class Service:
             self._create_payment_placeholder(trip, item.vendor_id, user.id, item.other_charges, "Other Charges")
 
             await self.session.commit()
+            
+            # Send notification to branch manager when vendor is assigned
+            try:
+                # Get vendor details
+                vendor = await self.session.get(Vendor, item.vendor_id)
+                vendor_name = vendor.vendor_name if vendor else "Unknown Vendor"
+                
+                # Get branch manager for the trip's branch
+                manager_id = await get_branch_manager_id(self.session, trip.branch_id)
+                management_ids = await administrative_user_id(self.session, "management")
+                
+                if manager_id:
+                    notification_helper = NotificationHelper(self.session)
+                    await notification_helper.approve_flit_rate_notification(
+                        user_ids=[manager_id, *management_ids],
+                        trip_id=trip.id,
+                        trip_code=trip.trip_code,
+                        request=request
+                    )
+                    print(f"✅ Vendor assignment notification sent to branch manager: {manager_id}")
+                else:
+                    print(f"⚠️ No branch manager found for branch {trip.branch_id}")
+            except Exception as notification_error:
+                # Log notification error but don't fail the vendor assignment
+                print(f"❌ Failed to send vendor assignment notification: {str(notification_error)}")
+            
             self.session.expire(trip)
             updated_trip = await self.get_object(id)
             return self._to_read_schema(updated_trip, request)
@@ -1123,7 +1150,7 @@ class Service:
 
             
             # Store previous status before any changes
-            previous_status = str(trip.status) if trip.status else "Unknown"
+            previous_status = trip.status.value if trip.status else "Unknown"
             print(f"Previous status from database: {previous_status}")
             if trip.status == item.status:
                 raise HTTPException(
@@ -1213,6 +1240,47 @@ class Service:
             await self.session.commit()
             await self.session.refresh(trip)
             
+            # Send notification to supervisors when trip is approved
+            if item.status == TripStatusEnum.APPROVED:
+                try:
+                    supervisor_ids = await get_supervisors_in_branch(self.session, trip.branch_id)
+                    
+                    if supervisor_ids:
+                        notification_helper = NotificationHelper(self.session)
+                        await notification_helper.assign_vendor_notification(
+                            user_ids=supervisor_ids,
+                            trip_id=trip.id,
+                            trip_code=trip.trip_code,
+                            request=request
+                        )
+                        print(f"✅ Trip approval notification sent to {len(supervisor_ids)} supervisor(s)")
+                    else:
+                        print(f"⚠️ No supervisors found in branch {trip.branch_id}")
+                except Exception as notification_error:
+                    # Log notification error but don't fail the status update
+                    print(f"❌ Failed to send supervisor notification: {str(notification_error)}")
+            
+            #send notifications to supervisor when flit rate is approved
+            if item.status == TripStatusEnum.FLEET_RATE_APPROVE:
+                try:
+                    supervisor_ids = await get_supervisors_in_branch(self.session, trip.branch_id)
+                    
+                    if supervisor_ids:
+                        notification_helper = NotificationHelper(self.session)
+                        await notification_helper.flit_rate_approved_notification(
+                            user_ids=supervisor_ids,
+                            trip_id=trip.id,
+                            trip_code=trip.trip_code,
+                            request=request
+                        )
+                        print(f"✅ Trip approval notification sent to {len(supervisor_ids)} supervisor(s)")
+                    else:
+                        print(f"⚠️ No supervisors found in branch {trip.branch_id}")
+                except Exception as notification_error:
+                    # Log notification error but don't fail the status update
+                    print(f"❌ Failed to send supervisor notification: {str(notification_error)}")
+            
+
             # Send notification for status change
             notification_helper = NotificationHelper(self.session)
             await notification_helper.trip_status_changed(
@@ -1513,6 +1581,17 @@ class Service:
             self.session.add(trip)
 
             await self.session.commit()
+
+            if trip.status == TripStatusEnum.VEHICLE_LOADED:
+                management_ids = await administrative_user_id(self.session, "management")
+
+                notification_helper = NotificationHelper(self.session)
+                await notification_helper.vehicle_loaded_notification(
+                    user_ids=management_ids,
+                    trip_id=trip.id,
+                    trip_code=trip.trip_code,
+                request=request
+            )
 
             return await self.read(request, trip.id)
         except HTTPException:

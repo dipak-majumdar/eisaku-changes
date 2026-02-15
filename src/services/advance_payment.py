@@ -23,6 +23,8 @@ from schemas.advance_payment import (
 )
 from schemas.branch import IdName
 from utils.date_helpers import get_date_range
+from services.notification_helpers import NotificationHelper
+from services.helper import administrative_user_id
 
 
 OBJECT_NOT_FOUND = "Advance payment not found"
@@ -750,6 +752,21 @@ class Service:
             await self.session.commit()
             await self.session.refresh(trip)
             # await self.session.refresh(advance_entry)
+
+            try:
+                accountant_ids = await administrative_user_id(self.session, 'accountant') 
+                notification_helper = NotificationHelper(self.session)
+                await notification_helper.advance_payment_approved_notification(
+                    user_ids=accountant_ids,
+                    trip_id=trip.id,
+                    trip_code=trip.trip_code,
+                    request=request
+                )
+            except Exception as e:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=f"Notification Error: {e}"
+                )
 
             return {"detail": "Trip advance payment approved successfully"}
         except Exception as e:
