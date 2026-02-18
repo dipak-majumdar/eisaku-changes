@@ -21,11 +21,11 @@ from schemas.advance_payment import (
     AdvancePaymentTripList,
     AdvancePaymentUpdate as UpdateSchema,
 )
+from services.mail import EmailNotificationService
 from schemas.branch import IdName
 from utils.date_helpers import get_date_range
 from services.notification_helpers import NotificationHelper
-from services.helper import administrative_user_id
-
+from services.helper import administrative_user_id, get_branch_manager_id, get_supervisors_in_branch
 
 OBJECT_NOT_FOUND = "Advance payment not found"
 OBJECT_EXIST = "Advance payment already exists"
@@ -297,6 +297,8 @@ class Service:
                     )
                     self.session.add(history_entry)
 
+                
+
             else: # Payment for Vendor
                 if not trip.is_advance_payment_done:
                     raise HTTPException(
@@ -422,6 +424,28 @@ class Service:
                         if vendor_remaining <= 0:
                             trip.status = TripStatusEnum.COMPLETED
                             status_remarks = "Trip completed."
+                            
+                            # Send notification when trip is completed
+                            try:
+                                
+                                manager_ids = await get_branch_manager_id(self.session, trip.branch_id)
+                                management_ids = await administrative_user_id(self.session, 'management')
+                                supervisor_ids = await get_supervisors_in_branch(self.session, trip.branch_id)
+                                
+                                # Combine all recipients and remove duplicates
+                                all_recipients = list(set([*manager_ids, *management_ids, *supervisor_ids]))
+                                
+                                if all_recipients:
+                                    notification_helper = NotificationHelper(self.session)
+                                    await notification_helper.trip_completed_notification(
+                                        user_ids=all_recipients,
+                                        trip_id=trip.id,
+                                        trip_code=trip.trip_code,
+                                        request=request
+                                    )
+                                    print(f"✅ Trip completed notification sent to: {all_recipients}")
+                            except Exception as notification_error:
+                                print(f"❌ Failed to send trip completed notification: {str(notification_error)}")
                         else:
                             trip.status = TripStatusEnum.IN_TRANSIT
                             status_remarks = "In Transit"
@@ -450,6 +474,36 @@ class Service:
             await self.session.commit()
             await self.session.refresh(obj)
             
+            # Send notification to supervisors when advance payment for vendor is completed
+            if obj.payment_type == "Advance Payment" and trip.is_advance_given:
+                try:
+                    
+                    supervisor_ids = await get_supervisors_in_branch(self.session, trip.branch_id)
+                    
+                    if supervisor_ids:
+                        notification_helper = NotificationHelper(self.session)
+                        await notification_helper.advance_payment_completed_notification(
+                            user_ids=supervisor_ids,
+                            trip_id=trip.id,
+                            trip_code=trip.trip_code,
+                            request=request
+                        )
+                        print(f"✅ Advance payment notification sent to supervisors: {supervisor_ids}")
+                    else:
+                        print("⚠️ No supervisors found for advance payment notification")
+                except Exception as notification_error:
+                    print(f"❌ Failed to send advance payment notification: {str(notification_error)}")
+            
+                #send mail to accountant
+                try:
+                    email_service = EmailNotificationService(self.session)
+                    await email_service.send_vendor_advance_payment_completed_email(
+                        trip_id=trip.id,
+                        request=request
+                    )
+                except Exception as mail_error:
+                    print(f"❌ Failed to send advance payment completed mail: {str(mail_error)}")
+       
             return await self.read(obj.id)
         except IntegrityError as e:
             await self.session.rollback()
@@ -813,6 +867,34 @@ class Service:
             self.session.add(history_entry)
             await self.session.commit()
             await self.session.refresh(trip)
+
+            # Send notification to accountants when balance payment is approved
+            try:  
+                accountant_ids = await administrative_user_id(self.session, 'accountant')
+                
+                if accountant_ids:
+                    notification_helper = NotificationHelper(self.session)
+                    await notification_helper.balance_payment_approved_notification(
+                        user_ids=accountant_ids,
+                        trip_id=trip.id,
+                        trip_code=trip.trip_code,
+                        request=request
+                    )
+                    print(f"✅ Balance payment approved notification sent to accountants: {accountant_ids}")
+                else:
+                    print("⚠️ No accountants found for balance payment notification")
+            except Exception as notification_error:
+                print(f"❌ Failed to send balance payment approved notification: {str(notification_error)}")
+
+            #send mail to accountant
+            try:
+                email_service = EmailNotificationService(self.session)
+                await email_service.send_vendor_advance_payment_approved_email(
+                    trip_id=trip.id,
+                    request=request
+                )
+            except Exception as mail_error:
+                print(f"❌ Failed to send balance payment approved mail: {str(mail_error)}")
 
             return {"detail": "Trip balance payment approved successfully"}
         except Exception as e:

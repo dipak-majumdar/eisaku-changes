@@ -179,7 +179,6 @@ class Service:
             )
         )
 
-
     async def get_object(self, id: UUID) -> Model:
         """Get trip with all relationships"""
         stmt = (
@@ -904,30 +903,10 @@ class Service:
             
             # ✅ Send targeted notification to branch manager (non-blocking)
             try:
-                from core.websocket_manager import socket_manager
-                
                 if manager_id:
-                    notification_data = {
-                        "notification_type": "trip_created",
-                        "message": f"New trip {trip.trip_code} created - approval required",
-                        "trip_id": str(trip.id),
-                        "trip_code": trip.trip_code,
-                        "trip_date": str(trip.trip_date),
-                        "customer_id": str(trip.customer_id),
-                        "action_required": True,
-                        "action_data": {
-                            "trip_id": str(trip.id),
-                            "trip_code": trip.trip_code
-                        },
-                        "created_at": datetime.utcnow().isoformat()
-                    }
-                    
-                    # Send to specific branch manager only
-                    await socket_manager.send_to_users(
-                        user_ids=[str(manager_id)],
-                        notification=notification_data,
-                        db_session=None  # Notification service handles DB save
-                    )
+                    notification_helper = NotificationHelper(self.session)
+                    await notification_helper.new_trip_created(user_ids=[str(manager_id)], trip_id=trip.id, trip_code=trip.trip_code, request=request)
+
                     print(f"✅ Trip creation notification sent to branch manager: {manager_id}")
                 else:
                     print(f"⚠️ No branch manager found for notification")
@@ -956,9 +935,8 @@ class Service:
             result_customer = await self.session.execute(stmt_customer)
             customer = result_customer.scalars().first()
 
-            # Send mail to the customer
-            if customer and customer.user and customer.user.email:
-                
+            # Create Advance Payment records if applicable
+            if customer:
                 if trip.trip_rate > 0:
                     customer_rate_create = AdvancePayment(
                         trip_id=trip.id,
@@ -969,7 +947,8 @@ class Service:
                         payment_type=TRIP_RATE,
                         is_paid_amount=False,
                     )
-                customer_loading_charges = None
+                    self.session.add(customer_rate_create)
+                
                 if trip.loading_unloading_charges > 0:
                     customer_loading_charges = AdvancePayment(
                         trip_id=trip.id,
@@ -980,22 +959,21 @@ class Service:
                         payment_type=LOADING_UNLOADING_CHARGES,
                         is_paid_amount=False,
                     )
-                self.session.add(customer_rate_create)
-                if customer_loading_charges:
                     self.session.add(customer_loading_charges)
-                await self.session.commit()
-
-
-                header_msg = "New trip created"
-                body_msg = f"A new trip has been created. Trip code: {trip.trip_code}"
                 
-                await send_email(
-                    session=self.session,
-                    request=request, 
-                    user=customer.user, 
-                    header_msg=header_msg, 
-                    body_msg=body_msg
+                if trip.trip_rate > 0 or trip.loading_unloading_charges > 0:
+                    await self.session.commit()
+
+            # Send trip creation emails via new service
+            try:
+                from services.mail import EmailNotificationService
+                email_service = EmailNotificationService(self.session)
+                await email_service.send_trip_created_email(
+                    trip_id=trip.id,
+                    request=request
                 )
+            except Exception as e:
+                print(f"❌ Failed to send trip creation emails: {str(e)}")
 
             return await self.read(request, trip.id)
 
@@ -1087,7 +1065,7 @@ class Service:
             self._create_payment_placeholder(trip, item.vendor_id, user.id, item.other_charges, "Other Charges")
 
             await self.session.commit()
-            
+
             # Send notification to branch manager when vendor is assigned
             try:
                 # Get vendor details
@@ -1095,24 +1073,35 @@ class Service:
                 vendor_name = vendor.vendor_name if vendor else "Unknown Vendor"
                 
                 # Get branch manager for the trip's branch
-                manager_id = await get_branch_manager_id(self.session, trip.branch_id)
+                manager_ids = await get_branch_manager_id(self.session, trip.branch_id)
                 management_ids = await administrative_user_id(self.session, "management")
                 
-                if manager_id:
+                if manager_ids:
                     notification_helper = NotificationHelper(self.session)
                     await notification_helper.approve_flit_rate_notification(
-                        user_ids=[manager_id, *management_ids],
+                        user_ids=[*manager_ids, *management_ids],
                         trip_id=trip.id,
                         trip_code=trip.trip_code,
                         request=request
                     )
-                    print(f"✅ Vendor assignment notification sent to branch manager: {manager_id}")
+                    print(f"✅ Vendor assignment notification sent to branch managers: {manager_ids}")
                 else:
                     print(f"⚠️ No branch manager found for branch {trip.branch_id}")
             except Exception as notification_error:
                 # Log notification error but don't fail the vendor assignment
                 print(f"❌ Failed to send vendor assignment notification: {str(notification_error)}")
-            
+
+            # Send email notifications
+            try:
+                from services.mail import EmailNotificationService
+                email_service = EmailNotificationService(self.session)
+                await email_service.send_vendor_assigned_email(
+                    trip_id=trip.id,
+                    request=request
+                )
+            except Exception as e:
+                print(f"❌ Failed to send vendor assignment emails: {str(e)}")
+
             self.session.expire(trip)
             updated_trip = await self.get_object(id)
             return self._to_read_schema(updated_trip, request)
@@ -1150,8 +1139,7 @@ class Service:
 
             
             # Store previous status before any changes
-            previous_status = trip.status.value if trip.status else "Unknown"
-            print(f"Previous status from database: {previous_status}")
+            previous_status = str(trip.status.value) if trip.status else None
             if trip.status == item.status:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
@@ -1259,6 +1247,17 @@ class Service:
                 except Exception as notification_error:
                     # Log notification error but don't fail the status update
                     print(f"❌ Failed to send supervisor notification: {str(notification_error)}")
+
+                # Send email notification to supervisors
+                try:
+                    from services.mail import EmailNotificationService
+                    email_service = EmailNotificationService(self.session)
+                    await email_service.send_trip_approved_email(
+                        trip_id=trip.id,
+                        request=request
+                    )
+                except Exception as e:
+                    print(f"❌ Failed to send trip approval emails: {str(e)}")
             
             #send notifications to supervisor when flit rate is approved
             if item.status == TripStatusEnum.FLEET_RATE_APPROVE:
@@ -1280,7 +1279,17 @@ class Service:
                     # Log notification error but don't fail the status update
                     print(f"❌ Failed to send supervisor notification: {str(notification_error)}")
             
-
+            # Send email notification for fleet rate approval
+                try:
+                    from services.mail import EmailNotificationService
+                    email_service = EmailNotificationService(self.session)
+                    await email_service.send_fleet_rate_approved_email(
+                        trip_id=trip.id,
+                        request=request
+                    )
+                except Exception as e:
+                    print(f"❌ Failed to send fleet rate approval emails: {str(e)}")
+            
             # Send notification for status change
             notification_helper = NotificationHelper(self.session)
             await notification_helper.trip_status_changed(
@@ -1590,9 +1599,20 @@ class Service:
                     user_ids=management_ids,
                     trip_id=trip.id,
                     trip_code=trip.trip_code,
-                request=request
-            )
-
+                    request=request
+                )
+            
+            # Send email notification for vehicle loaded
+            try:
+                from services.mail import EmailNotificationService
+                email_service = EmailNotificationService(self.session)
+                await email_service.send_vehicle_loaded_email(
+                    trip_id=trip.id,
+                    request=request
+                )
+            except Exception as e:
+                print(f"❌ Failed to send vehicle loaded emails: {str(e)}")
+            
             return await self.read(request, trip.id)
         except HTTPException:
             await self.session.rollback()
@@ -1702,6 +1722,28 @@ class Service:
             self.session.add(history_entry1)
             await self.session.flush()
 
+            # Send notification to managers when vehicle is unloaded
+            try:
+                
+                manager_ids = await get_branch_manager_id(self.session, trip.branch_id)
+                management_ids = await administrative_user_id(self.session, 'management')
+                
+                all_recipients = list(set([*manager_ids, *management_ids]))
+
+                if manager_ids or management_ids:
+                    notification_helper = NotificationHelper(self.session)
+                    await notification_helper.vehicle_unloaded_notification(
+                        user_ids=all_recipients,
+                        trip_id=trip.id,
+                        trip_code=trip.trip_code,
+                        request=request
+                    )
+                    print(f"✅ Vehicle unloaded notification sent to managers and management: {all_recipients}")
+                else:
+                    print(f"⚠️ No managers found for vehicle unloaded notification")
+            except Exception as notification_error:
+                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to send vehicle unloaded notification: {str(notification_error)}")
+
             # Then, if POD is submitted, update to POD_SUBMITTED
             if pod_submit:
                 upload_dir = f"uploads/trip_documents/{trip.id}/unloading"
@@ -1718,9 +1760,38 @@ class Service:
                     updated_by=user.id
                 )
                 self.session.add(history_entry2)
+                
+                # Send separate notification when POD is submitted
+                try:
+                    if manager_ids or management_ids:
+                        # Combine lists and remove duplicates
+                        all_recipients = list(set([*manager_ids, *management_ids]))
+                        
+                        notification_helper = NotificationHelper(self.session)
+                        await notification_helper.pod_submitted_notification(
+                            user_ids=all_recipients,
+                            trip_id=trip.id,
+                            trip_code=trip.trip_code,
+                            request=request
+                        )
+                        print(f"✅ POD submitted notification sent to manager and management: {all_recipients}")
+                except Exception as notification_error:
+                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to send POD submitted notification: {str(notification_error)}")
 
             self.session.add(trip)
             await self.session.commit()
+
+            # Send email notification for vehicle unloaded (with POD attached if submitted)
+            try:
+                from services.mail import EmailNotificationService
+                email_service = EmailNotificationService(self.session)
+                await email_service.send_vehicle_unloaded_email(
+                    trip_id=trip.id,
+                    request=request,
+                )
+            except Exception as e:
+                print(f"❌ Failed to send vehicle unloaded emails: {str(e)}")
+
             return await self.read(request, trip.id)
         except HTTPException:
             await self.session.rollback()
@@ -1851,6 +1922,40 @@ class Service:
 
             self.session.add(trip)
             await self.session.commit()
+
+            # Send separate notification when POD is submitted
+            try:
+                manager_ids = await get_branch_manager_id(self.session, trip.branch_id)
+                
+                if manager_ids:
+                    notification_helper = NotificationHelper(self.session)
+                    await notification_helper.pod_submitted_notification(
+                        user_ids=manager_ids,
+                        trip_id=trip.id,
+                        trip_code=trip.trip_code,
+                        request=request
+                    )
+                    print(f"✅ POD submitted notification sent to managers : {manager_ids}")
+            except Exception as notification_error:
+                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to send POD submitted notification: {str(notification_error)}")
+
+
+            # Send separate notification to management when POD is submitted
+            try:
+                management_ids = await administrative_user_id(self.session, 'management')
+
+                if management_ids:
+                    notification_helper = NotificationHelper(self.session)
+                    await notification_helper.pending_balance_payment_notification(
+                        user_ids=management_ids,
+                        trip_id=trip.id,
+                        trip_code=trip.trip_code,
+                        request=request
+                    )
+                    print(f"✅ POD submitted notification sent to management: {management_ids}")
+            except Exception as notification_error:
+                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to send POD submitted notification: {str(notification_error)}")
+
             return await self.read(request, trip.id)
         except HTTPException:
             await self.session.rollback()

@@ -11,24 +11,28 @@ from services.notifications import NotificationService
 
 USER_CREATED = "user_created"
 VENDOR_CREATED = "vendor_created"
-TRIP_APPROVAL = "trip_approval"
 TRIP_APPROVED = "trip_approved"
-TRIP_STATUS_CHANGE = "trip_status_change"
-VENDOR_ASSIGNMENT = "vendor_assignment"
 VENDOR_ASSIGNED = "vendor_assigned"
-FLIT_RATE_APPROVAL = "flit_rate_approval"
-FLIT_RATE_APPROVED = "flit_rate_approved"
 VEHICAL_LOADING_PENDING = "vehical_loading_pending"
 VEHICAL_LOADING_APPROVED = "vehical_loading_approved"
-ADVANCE_PAYMENT_APPROVAL = "advance_payment_approval"
-ADVANCE_PAYMENT_APPROVED = "advance_payment_approved"
 ADVANCE_PAYMENT_REJECTED = "advance_payment_rejected"
 ADVANCE_PAYMENT_VENDOR_PENDING = "advance_payment_vendor_pending"
 ADVANCE_PAYMENT_VENDOR_APPROVED = "advance_payment_vendor_approved"
+TRIP_APPROVAL = "trip_approval"
+
+TRIP_CREATED = "trip_created"
+TRIP_STATUS_CHANGE = "trip_status_change"
+VENDOR_ASSIGNMENT = "vendor_assignment"
+FLIT_RATE_APPROVAL = "flit_rate_approval"
+FLIT_RATE_APPROVED = "flit_rate_approved"
+VENDOR_ADVANCE_PAYMENT_APPROVAL = "vendor_advance_payment_approval"
+VENDOR_ADVANCE_PAYMENT_APPROVED = "vendor_advance_payment_approved"
+VENDOR_ADVANCE_PAYMENT_COMPLETED = "vendor_advance_payment_completed"
 VEHICAL_UNLOADED = "vehical_unloaded"
 POD_SUBMITED = "pod_submited"
-
-BASE_URL  = f"{request.url.scheme}://{request.url.netloc}"
+BALANCE_PAYMENT_REQUIRED = "balance_payment_required"
+BALANCE_PAYMENT_APPROVED = "balance_payment_approved"
+TRIP_COMPLETED = "trip_completed"
 
 
 class NotificationHelper:
@@ -53,7 +57,7 @@ class NotificationHelper:
         base_url = f"{request.url.scheme}://{request.url.netloc}"
         
         notification_data = NotificationCreate(
-            notification_type=TRIP_APPROVAL,
+            notification_type=TRIP_CREATED,
             user_ids=user_ids,
             message=f"Trip {trip_code} Created!",
             action_required=True,
@@ -62,14 +66,26 @@ class NotificationHelper:
                     {"name": "approve", "url": f"{base_url}/api/v1/trips/{trip_id}/status/"},
                     {"name": "reject", "url": f"{base_url}/api/v1/trips/{trip_id}/status/"}
                 ],
-                "redirect_url": f"{base_url}/trips/{trip_id}",
-                "redirect_screen": "ViewMarketTrip"
+                "redirect_url": f"market-trip/view/{trip_id}",
+                "redirect_screen": "ViewMarketTrip",
+                "redirect_id": str(trip_id)
             },
             action_deadline=action_deadline,
-            is_read=False
         )
         
-        await self.notification_service.create_notification(notification_data, request)
+        # Convert to dictionary for socket_manager
+        notification_dict = notification_data.model_dump()
+        
+        # Handle datetime serialization for JSON
+        if 'action_deadline' in notification_dict and notification_dict['action_deadline']:
+            notification_dict['action_deadline'] = notification_dict['action_deadline'].isoformat()
+        
+        # Send to users via socket_manager
+        await socket_manager.send_to_users(
+            user_ids=user_ids, 
+            notification=notification_dict,
+            db_session=None  # Notification service handles DB save
+        )
     
     async def trip_status_changed(
         self,
@@ -91,18 +107,28 @@ class NotificationHelper:
             message=f"Trip {trip_code} status changed from {previous_status} to {new_status}",
             action_required=True,
             action_data={
-                "redirect_url": f"{base_url}/trips/{trip_id}",
-                "redirect_screen": "ViewMarketTrip"
+                "redirect_url": f"market-trip/view/{trip_id}",
+                "redirect_screen": "ViewMarketTrip",
+                "redirect_id": str(trip_id)
             },
             action_deadline=None,
-            is_read=False
         )
         
-        await self.notification_service.create_notification(notification_data, request)
-    
+        # Convert to dictionary for socket_manager
+        notification_dict = notification_data.model_dump()
+        
+        # Send to supervisors in the branch
+        await socket_manager.send_to_users(
+            user_ids=user_ids, 
+            notification=notification_dict,
+            db_session=None  # Notification service handles DB save
+            )
     
     async def assign_vendor_notification(self, user_ids: List[str], trip_id: UUID, trip_code: str, request: Request) -> None:
         """Create notification for supervisors to assign vendor after trip approval"""
+
+        # Get base URL from request
+        base_url = f"{request.url.scheme}://{request.url.netloc}"
 
         notification_data = NotificationCreate(
             notification_type=VENDOR_ASSIGNMENT,
@@ -111,8 +137,9 @@ class NotificationHelper:
             message=f"Trip {trip_code} has been approved - please assign a vendor",
             action_required=True,
             action_data={
-                "redirect_url": f"{BASE_URL}/trips/{trip_id}",
-                "redirect_screen": "ViewMarketTrip"
+                "redirect_url": f"market-trip/view/{trip_id}",
+                "redirect_screen": "ViewMarketTrip",
+                "redirect_id": str(trip_id)
             },
         )
         
@@ -128,7 +155,7 @@ class NotificationHelper:
 
     async def approve_flit_rate_notification(self, user_ids: List[str], trip_id: UUID, trip_code: str, request: Request) -> None:
         """Create notification for vendors to assign vendor after trip approval"""
-        
+
         notification_data = NotificationCreate(
             notification_type=FLIT_RATE_APPROVAL,
             user_ids=user_ids,
@@ -136,8 +163,9 @@ class NotificationHelper:
             message=f"Approve Flip Rate for Trip {trip_code}",
             action_required=True,
             action_data={
-                "redirect_url": f"{BASE_URL}/trips/{trip_id}",
-                "redirect_screen": "ViewMarketTrip"
+                "redirect_url": f"market-trip/view/{trip_id}",
+                "redirect_screen": "ViewMarketTrip",
+                "redirect_id": str(trip_id)
             },
         )
         
@@ -161,8 +189,9 @@ class NotificationHelper:
             message=f"Flit Rate Approved, Start Loading Trip {trip_code}",
             action_required=True,
             action_data={
-                "redirect_url": f"{BASE_URL}/trips/{trip_id}",
-                "redirect_screen": "ViewMarketTrip"
+                "redirect_url": f"market-trip/view/{trip_id}",
+                "redirect_screen": "ViewMarketTrip",
+                "redirect_id": str(trip_id)
             },
         )
         
@@ -180,14 +209,15 @@ class NotificationHelper:
         """Create notification for management to approve advance payment when vehicle is loaded"""
         
         notification_data = NotificationCreate(
-            notification_type=ADVANCE_PAYMENT_APPROVAL,
+            notification_type=VENDOR_ADVANCE_PAYMENT_APPROVAL,
             user_ids=user_ids,
             role=None,
             message=f"Approve Advance Payment for Trip {trip_code}",
             action_required=True,
             action_data={
-                "redirect_url": f"{BASE_URL}/trips/{trip_id}",
-                "redirect_screen": "ViewMarketTrip"
+                "redirect_url": f"market-advance-payment/view",
+                "redirect_screen": "ViewMarketTrip",
+                "redirect_id": str(trip_id)
             },
         )
         
@@ -205,14 +235,41 @@ class NotificationHelper:
         """Create notification for management to approve advance payment when vehicle is loaded"""
         
         notification_data = NotificationCreate(
-            notification_type=ADVANCE_PAYMENT_APPROVED,
+            notification_type=VENDOR_ADVANCE_PAYMENT_APPROVED,
             user_ids=user_ids,
             role=None,
-            message=f"Approve Advance Payment for Trip {trip_code}",
+            message=f"Advance Payment Approved, Release Payment for Trip {trip_code}",
             action_required=True,
             action_data={
-                "redirect_url": f"{BASE_URL}/trips/{trip_id}",
-                "redirect_screen": "ViewMarketTrip"
+                "redirect_url": f"market-trip/view/{trip_id}",
+                "redirect_screen": "ViewMarketTrip",
+                "redirect_id": str(trip_id)
+            },
+        )
+        
+        # Convert to dictionary for socket_manager
+        notification_dict = notification_data.model_dump()
+        
+        # Send to management
+        await socket_manager.send_to_users(
+            user_ids=user_ids, 
+            notification=notification_dict,
+            db_session=None  # Notification service handles DB save
+        )
+ 
+    async def advance_payment_completed_notification(self, user_ids: List[str], trip_id: UUID, trip_code: str, request: Request) -> None:  
+        """Create notification for management to approve advance payment when vehicle is loaded"""
+        
+        notification_data = NotificationCreate(
+            notification_type=VENDOR_ADVANCE_PAYMENT_COMPLETED,
+            user_ids=user_ids,
+            role=None,
+            message=f"Advance Payment Completed for Trip {trip_code}",
+            action_required=True,
+            action_data={
+                "redirect_url": f"market-trip/view/{trip_id}",
+                "redirect_screen": "ViewMarketTrip",
+                "redirect_id": str(trip_id)
             },
         )
         
@@ -226,85 +283,107 @@ class NotificationHelper:
             db_session=None  # Notification service handles DB save
         )
     
-    async def create_vendor_registration_notification(
-        self,
-        user_ids: List[str],
-        vendor_id: UUID,
-        vendor_name: str,
-        request: Request,
-        deadline_hours: int = 48
-    ) -> None:
-        """Create notification for new vendor registration approval"""
-        action_deadline = datetime.utcnow() + timedelta(hours=deadline_hours)
+    
+    async def vehicle_unloaded_notification(self, user_ids: List[str], trip_id: UUID, trip_code: str, request: Request) -> None:
+        """Create notification when vehicle is unloaded"""
         
         notification_data = NotificationCreate(
+            notification_type=VEHICAL_UNLOADED,
             user_ids=user_ids,
-            notification_type="vendor_approval",
-            message=f"New vendor '{vendor_name}' registration requires approval",
+            message=f"Vehicle unloaded for Trip {trip_code}",
             action_required=True,
             action_data={
-                "vendor_id": str(vendor_id),
-                "vendor_name": vendor_name,
-                "action_url": f"/vendors/{vendor_id}/approve"
+                "redirect_url": f"market-trip/view/{trip_id}",
+                "redirect_screen": "ViewMarketTrip",
+                "redirect_id": str(trip_id)
             },
-            action_deadline=action_deadline,
-            is_read=False
         )
         
-        await self.notification_service.create_notification(notification_data, request)
+        # Convert to dictionary for socket_manager
+        notification_dict = notification_data.model_dump()
+        
+        await socket_manager.send_to_users(
+            user_ids=user_ids, 
+            notification=notification_dict,
+            db_session=None  # Notification service handles DB save
+        )
     
-    async def create_payment_notification(
-        self,
-        user_ids: List[str],
-        payment_id: str,
-        amount: float,
-        payment_type: str,
-        request: Request
-    ) -> None:
-        """Create notification for payment received/pending"""
+    async def pod_submitted_notification(self, user_ids: List[str], trip_id: UUID, trip_code: str, request: Request) -> None:
+        """Create notification when POD is submitted"""
+        
         notification_data = NotificationCreate(
+            notification_type=POD_SUBMITED,
             user_ids=user_ids,
-            notification_type="payment",
-            message=f"Payment {payment_type}: ${amount:.2f} {'received' if payment_type == 'received' else 'pending'}",
-            action_required=payment_type == "pending",
-            action_data={
-                "payment_id": payment_id,
-                "amount": amount,
-                "payment_type": payment_type,
-                "action_url": f"/payments/{payment_id}" if payment_type == "pending" else None
-            }
-        )
-        
-        await self.notification_service.create_notification(notification_data, request)
-    
-    async def create_complaint_notification(
-        self,
-        user_ids: UUID,
-        complaint_id: str,
-        complaint_type: str,
-        priority: str,
-        request: Request,
-        deadline_hours: int = 72
-    ) -> None:
-        """Create notification for new complaint"""
-        action_deadline = datetime.utcnow() + timedelta(hours=deadline_hours)
-        
-        notification_data = NotificationCreate(
-            user_id=user_id,
-            notification_type="complaint",
-            message=f"New {priority} priority {complaint_type} complaint registered",
+            message=f"POD submitted for Trip {trip_code}",
             action_required=True,
             action_data={
-                "complaint_id": complaint_id,
-                "complaint_type": complaint_type,
-                "priority": priority,
-                "action_url": f"/complaints/{complaint_id}"
+                "redirect_url": f"market-trip/view/{trip_id}",
+                "redirect_screen": "ViewMarketTrip",
+                "redirect_id": str(trip_id)
             },
-            action_deadline=action_deadline
+        )
+        
+        # Convert to dictionary for socket_manager
+        notification_dict = notification_data.model_dump()
+        
+        await socket_manager.send_to_users(
+            user_ids=user_ids, 
+            notification=notification_dict,
+            db_session=None  # Notification service handles DB save
+        )
+
+
+    async def pending_balance_payment_notification(self, user_ids: List[str], trip_id: UUID, trip_code: str, request: Request) -> None:
+        """Create notification when balance payment is pending"""
+        
+        notification_data = NotificationCreate(
+            notification_type=BALANCE_PAYMENT_REQUIRED,
+            user_ids=user_ids,
+            message=f"Balance payment required for Trip {trip_code}",
+            action_required=True,
+            action_data={
+                "redirect_url": f"market-trip/view/{trip_id}",
+                "redirect_screen": "ViewMarketTrip",
+                "redirect_id": str(trip_id)
+            },
         )
         
         await self.notification_service.create_notification(notification_data, request)
-    
+
+    async def balance_payment_approved_notification(self, user_ids: List[str], trip_id: UUID, trip_code: str, request: Request) -> None:
+        """Create notification when balance payment is approved"""
+        
+        notification_data = NotificationCreate(
+            notification_type=BALANCE_PAYMENT_APPROVED,
+            user_ids=user_ids,
+            message=f"Balance payment approved for Trip {trip_code}",
+            action_required=True,
+            action_data={
+                "redirect_url": f"market-trip/view/{trip_id}",
+                "redirect_screen": "ViewMarketTrip",
+                "redirect_id": str(trip_id)
+            },
+        )
+        
+        await self.notification_service.create_notification(notification_data, request)
+
+    async def trip_completed_notification(self, user_ids: List[str], trip_id: UUID, trip_code: str, request: Request) -> None:
+        """Create notification when trip is completed"""
+        
+        notification_data = NotificationCreate(
+            notification_type=TRIP_COMPLETED,
+            user_ids=user_ids,
+            message=f"Trip {trip_code} has been completed",
+            action_required=True,
+            action_data={
+                "redirect_url": f"market-trip/view/{trip_id}",
+                "redirect_screen": "ViewMarketTrip",
+                "redirect_id": str(trip_id)
+            },
+        )
+        
+        await self.notification_service.create_notification(notification_data, request)
+
     async def create_system_notification(
         self,
         user_ids: List[UUID],
@@ -383,70 +462,6 @@ class NotificationHelper:
         )
         
         await self.notification_service.create_notification(notification_data, request)
-
-
-# Convenience functions for common notification types
-async def notify_trip_approval(
-    session: AsyncSession,
-    user_id: UUID,
-    trip_id: str,
-    trip_details: Dict[str, Any],
-    request: Request,
-    deadline_hours: int = 24
-) -> None:
-    """Convenience function for trip approval notifications"""
-    helper = NotificationHelper(session)
-    await helper.create_trip_approval_notification(
-        user_id, trip_id, trip_details, request, deadline_hours
-    )
-
-
-
-async def notify_vendor_registration(
-    session: AsyncSession,
-    user_id: UUID,
-    vendor_id: UUID,
-    vendor_name: str,
-    request: Request,
-    deadline_hours: int = 48
-) -> None:
-    """Convenience function for vendor registration notifications"""
-    helper = NotificationHelper(session)
-    await helper.create_vendor_registration_notification(
-        user_id, vendor_id, vendor_name, request, deadline_hours
-    )
-
-
-async def notify_payment(
-    session: AsyncSession,
-    user_id: UUID,
-    payment_id: str,
-    amount: float,
-    payment_type: str,
-    request: Request
-) -> None:
-    """Convenience function for payment notifications"""
-    helper = NotificationHelper(session)
-    await helper.create_payment_notification(
-        user_id, payment_id, amount, payment_type, request
-    )
-
-
-async def notify_complaint(
-    session: AsyncSession,
-    user_id: UUID,
-    complaint_id: str,
-    complaint_type: str,
-    priority: str,
-    request: Request,
-    deadline_hours: int = 72
-) -> None:
-    """Convenience function for complaint notifications"""
-    helper = NotificationHelper(session)
-    await helper.create_complaint_notification(
-        user_id, complaint_id, complaint_type, priority, request, deadline_hours
-    )
-
 
 async def notify_system(
     session: AsyncSession,

@@ -127,33 +127,18 @@ ws.onmessage = (event) => {
 
 ### Creating a Trip Approval Notification
 ```python
-from services.notification_helpers import notify_trip_approval
+from services.notification_helpers import new_trip_created
 
-await notify_trip_approval(
+await new_trip_created(
     session=session,
     user_id=manager_id,
-    trip_id="TRP001",
-    trip_details={
-        "route": "NYC to LA",
-        "driver": "John Doe",
-        "vehicle": "Truck #123"
-    },
+    trip_id="UUID.randomUUID()",
+    trip_code="TRP001",
+    previous_status="draft",
+    new_status="pending_approval",
+    remarks="Trip created successfully",
     request=request,
     deadline_hours=24
-)
-```
-
-### Creating a Vendor Registration Notification
-```python
-from services.notification_helpers import notify_vendor_registration
-
-await notify_vendor_registration(
-    session=session,
-    user_id=admin_id,
-    vendor_id=vendor_uuid,
-    vendor_name="ABC Transport",
-    request=request,
-    deadline_hours=48
 )
 ```
 

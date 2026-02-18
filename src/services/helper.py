@@ -30,7 +30,7 @@ async def get_supervisors_in_branch(session: AsyncSession, branch_id: UUID) -> L
     return supervisor_ids
 
 
-async def get_branch_manager_id(session: AsyncSession, branch_id: UUID) -> str | None:
+async def get_branch_manager_id(session: AsyncSession, branch_id: UUID) -> List[str]:
     """Get the branch manager user ID for a given branch."""
     from models.role import Role
     
@@ -44,9 +44,13 @@ async def get_branch_manager_id(session: AsyncSession, branch_id: UUID) -> str |
         )
     )
     result = await session.execute(stmt)
-    branch_manager = result.scalars().first()
+    branch_managers = result.scalars().unique().all()
     
-    return str(branch_manager.user_id) if branch_manager else None
+    # Return all branch manager user IDs as a list
+    manager_ids = []
+    for manager in branch_managers:
+        manager_ids.append(str(manager.user_id))
+    return manager_ids
 
 
 async def administrative_user_id(session: AsyncSession, role_name: str) -> List[str]:
@@ -62,7 +66,7 @@ async def administrative_user_id(session: AsyncSession, role_name: str) -> List[
         )
     )
     result = await session.execute(stmt)
-    users = result.scalars().all()
+    users = result.scalars().unique().all()
 
     user_ids = []
     for user in users:

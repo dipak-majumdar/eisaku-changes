@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Eisaku Logistic Trip Notification</title>
+</head>
+
+<body style="margin:0; padding:0; background-color:#f4f6f8; font-family:Arial, Helvetica, sans-serif;">
+
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f6f8; padding:20px;">
+
+        <tr>
+            <td align="center">
+
+                <!-- Main Container -->
+                <table width="800" cellpadding="0" cellspacing="0"
+                    style="background-color:#ffffff; border-radius:6px; overflow:hidden;">
+
+                    <!-- Header -->
+                    <tr>
+                        <td style="background-color:#0b5ed7; padding:16px; text-align:center;">
+                            <h1 style="color:#ffffff; margin:0; font-size:22px;">
+                                Eisaku Logistics Ltd.
+                            </h1>
+                            <p style="color:#dbe8ff; margin:8px 0 0;">
+                                Reliable Logistics • On-Time Delivery
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Body -->
+
+                    <tr>
+                        <td style="padding:16px; color:#333333;">
+
+                            <h2 style="text-align: left; color:#0b5ed7; margin-bottom: 1rem;">Hi {{name}}</h2>
+                            <p style="line-height: 26px; font-size: 16px;">
+                                Advance payment for the vendor for trip <strong>{{trip_code}}</strong> has been
+                                <strong>completed</strong>.
+                            </p>
+
+                            <h2 style="margin-top:0; color:#0b5ed7;">
+                                Trip Details
+                            </h2>
+
+                            <table width="100%" cellpadding="8" cellspacing="0"
+                                style="border-collapse:collapse; font-size:14px; border-color: #88e8ff; border-width: 0.5px;"
+                                border="1" border-collapse="collapse">
+                                <tr>
+                                    <td style="background:#f1f5ff; font-weight:bold;">Trip Code</td>
+                                    <td>{{ trip_code }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="background:#f1f5ff; font-weight:bold;">Trip Rate</td>
+                                    <td>₹ {{ trip_rate }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="background:#f1f5ff; font-weight:bold;">Loading / Unloading Charges</td>
+                                    <td>₹ {{ loading_unloading_charges }}</td>
+                                </tr>
+
+                                <tr>
+                                    <td style="background:#f1f5ff; font-weight:bold;">Loading Date</td>
+                                    <td>{{ loading_date }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="background:#f1f5ff; font-weight:bold;">Vehicle Type</td>
+                                    <td>{{ vehicle_type }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="background:#f1f5ff; font-weight:bold;">Capacity</td>
+                                    <td>{{ capacity }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="background:#f1f5ff; font-weight:bold;">Types of Good</td>
+                                    <td>{{ types_of_good }}</td>
+                                </tr>
+                            </table>
+
+                            <p
+                                style="margin-top:20px; line-height:26px; background: #f1f1f1; padding: 1rem; border-radius: 10px; box-shadow: 0 3px 5px rgba(0, 0, 0, 0.05);">
+                                <strong>Instructions Details:</strong>
+                                {{ instructions_details }}
+                            </p>
+
+                            <p
+                                style="margin-top:20px; line-height:26px; background: #f1f1f1; padding: 1rem; border-radius: 10px; box-shadow: 0 3px 5px rgba(0, 0, 0, 0.05);">
+                                <strong>Loading Details:</strong>
+                                {{ loading_details }}
+                            </p>
+
+                            <p
+                                style="margin-top:20px; line-height:26px; background: #f1f1f1; padding: 1rem; border-radius: 10px; box-shadow: 0 3px 5px rgba(0, 0, 0, 0.05);">
+                                <strong>Unloading Details:</strong>
+                                {{ unloading_details }}
+                            </p>
+
+                            <h2 style="margin-top:0; color:#0b5ed7;">
+                                Vendor Fleet Details
+                            </h2>
+
+                            <table width="100%" cellpadding="8" cellspacing="0"
+                                style="border-collapse:collapse; font-size:14px; border-color: #88e8ff; border-width: 0.5px;"
+                                border="1" border-collapse="collapse">
+                                <tr>
+                                    <td style="background:#f1f5ff; font-weight:bold;">Vendor</td>
+                                    <td>{{ vendor_name }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="background:#f1f5ff; font-weight:bold;">Branch</td>
+                                    <td>{{ vendor_branch_name }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="background:#f1f5ff; font-weight:bold;">Trip Rate</td>
+                                    <td>₹ {{ vendor_trip_rate }}</td>
+                                </tr>
+
+                                <tr>
+                                    <td style="background:#f1f5ff; font-weight:bold;">Others Charges</td>
+                                    <td>₹ {{ vendor_other_charges }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="background:#f1f5ff; font-weight:bold;">Advance</td>
+                                    <td>₹ {{ vendor_advance }}</td>
+                                </tr>
+                            </table>
+
+                            <table style="margin-bottom:2rem">
+                                <tr>
+                                    <p style="font-size: 16px; font-weight: 600;">
+                                        You can review the full trip and payment details by opening the link below.
+                                    </p>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <a href="{{web_url}}"
+                                            style="padding: 10px 32px; background: #0b5ed7; color: #fff; text-decoration: none; border-radius: 10px;">
+                                            View Trip
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <p style="margin:0;">
+                                For any queries, feel free to contact our support team.
+                            </p>
+
+                            <table width="100%" cellpadding="8" cellspacing="0"
+                                style="border-collapse:collapse; font-size:14px; margin-top:1rem">
+                                <tr>
+                                    <td style="border: 0; padding: 0;">
+                                        <img src="https://www.eisaku.co.in/assets/frontend/images/site-logo-one.png"
+                                            alt="Logo" style="width: 220px; height: auto; margin-bottom: 10px;">
+
+                                        <p style="margin:8px 0;"><strong>Address:</strong> # 611A, Sixth Floor, JMD
+                                            Pacific Square,
+                                            Tower - B, Sector -15, Part - II, Gurgaon, Haryana, India, Pin Code: 122001
+                                        </p>
+                                        <p style="margin:8px 0;"><strong>Email:</strong> info@eisaku.co.in</p>
+                                        <p style="margin:8px 0;"><strong>Phone:</strong> +91-92126-03473 /
+                                            +91-70655-58184</p>
+                                        <p style="margin:8px 0;"><strong>Website:</strong> https://www.eisaku.co.in</p>
+                                    </td>
+                                </tr>
+
+                            </table>
+
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td
+                            style="background-color:#0bc4f0; padding:15px; text-align:center; font-size:14px; color:#fff;">
+                            © 2026 Eisaku Logistics Ltd. All rights reserved.
+                        </td>
+                    </tr>
+
+                </table>
+                <!-- End Container -->
+
+            </td>
+        </tr>
+    </table>
+
+</body>
+
+</html>
